@@ -252,6 +252,81 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+
+        .footer-banner {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-top: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+            background-size: 200% 100%;
+            animation: gradientMove 3s ease infinite;
+        }
+
+        @keyframes gradientMove {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .footer-banner h3 {
+            color: #333;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .footer-banner p {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .landing-btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .landing-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .landing-btn i {
+            margin-left: 10px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .landing-btn:hover i {
+            margin-left: 15px;
+        }
+
+        .footer-info {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+            color: #999;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
@@ -261,10 +336,26 @@
             <p>Sistem Monitoring Real-time untuk Budidaya Lobster Air Tawar</p>
         </div>
 
-        <div class="control-panel">
-            <button id="startBtn" class="btn btn-primary">▶ Mulai Monitoring</button>
-            <button id="stopBtn" class="btn btn-secondary" disabled>⏸ Pause Monitoring</button>
-            <button id="resetBtn" class="btn btn-secondary">🔄 Reset</button>
+        <div class="control-panel" style="display: flex; align-items: center; justify-content: space-between; gap: 30px;">
+            <div style="display: flex; gap: 15px;">
+                <button id="startBtn" class="btn btn-primary">▶ Mulai Monitoring</button>
+                <button id="stopBtn" class="btn btn-secondary" disabled>⏸ Pause Monitoring</button>
+            </div>
+            <div style="display: flex; gap: 30px; align-items: center;">
+                <div class="info-item">
+                    <span class="status-indicator"></span>
+                    <span class="label">Status:</span>
+                    <span class="value" id="statusValue">Standby</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Waktu Update:</span>
+                    <span class="value" id="lastUpdateValue">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Data Point:</span>
+                    <span class="value" id="dataPointValue">0 / 0</span>
+                </div>
+            </div>
         </div>
 
         <div class="stats-container">
@@ -299,50 +390,42 @@
 
         <div class="charts-grid">
             <div class="chart-container"> 
-                <h2>� pH Air</h2>
+                <h2>🧪 pH Air</h2>
                 <div class="chart-wrapper">
                     <canvas id="phChart"></canvas>
                 </div>
             </div>
             <div class="chart-container">
-                <h2>📊 Amonia (mg/L)</h2>
+                <h2>☢️ Amonia (mg/L)</h2>
                 <div class="chart-wrapper">
                     <canvas id="amoniaChart"></canvas>
                 </div>
             </div>
             <div class="chart-container">
-                <h2>📊 Suhu (°C)</h2>
+                <h2>🌡️ Suhu (°C)</h2>
                 <div class="chart-wrapper">
                     <canvas id="suhuChart"></canvas>
                 </div>
             </div>
             <div class="chart-container">
-                <h2>📊 Oksigen Terlarut (mg/L)</h2>
+                <h2>💨 Oksigen Terlarut (mg/L)</h2>
                 <div class="chart-wrapper">
                     <canvas id="doChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <div class="info-panel">
-            <div class="info-item">
-                <span class="status-indicator"></span>
-                <span class="label">Status:</span>
-                <span class="value" id="statusValue">Standby</span>
-            </div>
-            <div class="info-item">
-                <span class="label">Data Point:</span>
-                <span class="value" id="dataPointValue">0 / 0</span>
-            </div>
-            <div class="info-item">
-                <span class="label">Update Berikutnya:</span>
-                <span class="value" id="countdownValue">60 detik</span>
-            </div>
-            <div class="info-item">
-                <span class="label">Waktu Update:</span>
-                <span class="value" id="lastUpdateValue">-</span>
+        <div class="footer-banner">
+            <h3>👋 Tentang Kami</h3>
+            <p>Ingin tahu lebih banyak tentang tim pengembang di balik dashboard ini?</p>
+            <a href="/" class="landing-btn">
+                🎉 Kunjungi Landing Page Kami <i>→</i>
+            </a>
+            <div class="footer-info">
+                <p>👨‍💻 Dikembangkan oleh Tim Capstone Project Semester 7 | © 2025 Fullobster</p>
             </div>
         </div>
+
     </div>
 
     <script>
@@ -547,7 +630,8 @@
             document.getElementById('doValue').textContent = data.do.toFixed(1);
             
             const now = new Date();
-            document.getElementById('lastUpdateValue').textContent = now.toLocaleTimeString('id-ID');
+            const timeString = now.toLocaleTimeString('id-ID');
+            document.getElementById('lastUpdateValue').textContent = timeString;
             document.getElementById('dataPointValue').textContent = `${currentIndex + 1} / ${allData.length}`;
         }
 
@@ -572,7 +656,11 @@
 
         function updateCountdown() {
             countdown--;
-            document.getElementById('countdownValue').textContent = `${countdown} detik`;
+            
+            // Update waktu real-time setiap detik
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('id-ID');
+            document.getElementById('lastUpdateValue').textContent = timeString;
             
             if (countdown <= 0) {
                 countdown = 60;
@@ -654,7 +742,6 @@
             document.getElementById('doValue').textContent = '-';
             document.getElementById('statusValue').textContent = 'Standby';
             document.getElementById('dataPointValue').textContent = `0 / ${allData.length}`;
-            document.getElementById('countdownValue').textContent = '60 detik';
             document.getElementById('lastUpdateValue').textContent = '-';
             
             // Reset classification result
@@ -668,7 +755,6 @@
         // Event Listeners
         document.getElementById('startBtn').addEventListener('click', startMonitoring);
         document.getElementById('stopBtn').addEventListener('click', stopMonitoring);
-        document.getElementById('resetBtn').addEventListener('click', resetMonitoring);
 
         // Initialize
         window.addEventListener('load', () => {
