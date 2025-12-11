@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use App\Models\Monitorings;
 
 class DashboardController extends Controller
 {
@@ -13,6 +14,41 @@ class DashboardController extends Controller
     }
 
     public function getData(Request $request)
+    {
+        // Check if we have IoT data in database
+        $iotDataExists = Monitorings::count() > 0;
+        
+        if ($iotDataExists && !$request->has('use_csv')) {
+            return $this->getIoTData($request);
+        }
+        
+        return $this->getCSVData($request);
+    }
+
+    private function getIoTData(Request $request)
+    {
+        // Get data from database
+        $monitorings = Monitorings::latest()
+            ->limit(100) // Last 100 records for chart performance
+            ->get()
+            ->reverse() // Show in chronological order
+            ->values();
+
+        $data = $monitorings->map(function($monitoring, $index) {
+            return [
+                'index' => $index,
+                'date' => $monitoring->created_at->format('Y-m-d H:i:s'),
+                'ph' => floatval($monitoring->ph),
+                'amonia' => floatval($monitoring->amonia),
+                'suhu' => floatval($monitoring->suhu),
+                'do' => floatval($monitoring->do)
+            ];
+        });
+
+        return response()->json($data);
+    }
+
+    private function getCSVData(Request $request)
     {
         $csvPath = base_path('data/datamentah/dataset_dummy.csv');
         

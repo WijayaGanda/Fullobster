@@ -355,6 +355,10 @@
                     <span class="label">Data Point:</span>
                     <span class="value" id="dataPointValue">0 / 0</span>
                 </div>
+                <div class="info-item">
+                    <span class="label">Sumber Data:</span>
+                    <span class="value" id="dataSourceInfo">Loading...</span>
+                </div>
             </div>
         </div>
 
@@ -535,11 +539,110 @@
                     allData = data;
                     document.getElementById('dataPointValue').textContent = `0 / ${allData.length}`;
                     console.log('Data loaded:', allData.length, 'records');
+                    
+                    // Check if we have IoT data vs CSV data
+                    checkDataSource();
                 })
                 .catch(error => {
                     console.error('Error loading data:', error);
                     alert('Gagal memuat data. Silakan refresh halaman.');
                 });
+        }
+
+        function checkDataSource() {
+            // Cek apakah ada data di database IoT
+            fetch('/api/iot/latest')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.data) {
+                        document.getElementById('dataSourceInfo').textContent = 'Mode: Database IoT Ready';
+                        console.log('IoT database has data available:', data.data);
+                    } else {
+                        document.getElementById('dataSourceInfo').textContent = 'Mode: CSV Fallback (No IoT Data)';
+                        console.log('No IoT data found, will use CSV as fallback');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking data source:', error);
+                    document.getElementById('dataSourceInfo').textContent = 'Mode: CSV Fallback (Database Error)';
+                });
+        }
+
+        function startRealTimeMode() {
+            console.log('Starting real-time IoT mode');
+            
+            // Auto-load latest data every 30 seconds
+            setInterval(() => {
+                loadLatestIoTData();
+            }, 30000);
+            
+            // Load initial latest data
+            loadLatestIoTData();
+        }
+
+        function loadLatestIoTData() {
+            fetch('/api/iot/latest')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        const latestRecord = data[data.length - 1];
+                        addRealTimeData(latestRecord);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading latest IoT data:', error);
+                });
+        }
+
+        function addDatabaseDataToChart(data) {
+            const now = new Date();
+            const timeLabel = now.toLocaleTimeString('id-ID');
+            
+            // Add to chart data arrays
+            phData.labels.push(timeLabel);
+            phData.data.push(parseFloat(data.ph));
+            
+            amoniaData.labels.push(timeLabel);
+            amoniaData.data.push(parseFloat(data.amonia));
+            
+            suhuData.labels.push(timeLabel);
+            suhuData.data.push(parseFloat(data.suhu));
+            
+            doData.labels.push(timeLabel);
+            doData.data.push(parseFloat(data.do));
+            
+            // Keep only last 20 data points for performance
+            if (phData.labels.length > maxDataPoints) {
+                phData.labels.shift();
+                phData.data.shift();
+                amoniaData.labels.shift();
+                amoniaData.data.shift();
+                suhuData.labels.shift();
+                suhuData.data.shift();
+                doData.labels.shift();
+                doData.data.shift();
+            }
+            
+            // Update charts with smooth animation
+            phChart.update('active');
+            amoniaChart.update('active');
+            suhuChart.update('active');
+            doChart.update('active');
+        }
+
+        function updateDatabaseStats(data) {
+            document.getElementById('phValue').textContent = parseFloat(data.ph).toFixed(2);
+            document.getElementById('amoniaValue').textContent = parseFloat(data.amonia).toFixed(2);
+            document.getElementById('suhuValue').textContent = parseFloat(data.suhu).toFixed(1);
+            document.getElementById('doValue').textContent = parseFloat(data.do).toFixed(2);
+            
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('id-ID');
+            document.getElementById('lastUpdateValue').textContent = timeString;
+            
+            // Update data point counter
+            const dataPointCount = phData.labels.length;
+            document.getElementById('dataPointValue').textContent = `${dataPointCount} Data Point`;
         }
 
         function updateChart(data) {
@@ -635,23 +738,29 @@
             document.getElementById('dataPointValue').textContent = `${currentIndex + 1} / ${allData.length}`;
         }
 
-        function loadNextData() {
-            if (currentIndex < allData.length) {
-                const data = allData[currentIndex];
-                updateChart(data);
-                updateStats(data);
-                classifyData(data); // Klasifikasi otomatis
-                currentIndex++;
-                
-                // Reset countdown
-                countdown = 60;
-                
-                if (currentIndex >= allData.length) {
-                    stopMonitoring();
-                    document.getElementById('statusValue').textContent = 'Selesai';
-                    alert('Semua data telah ditampilkan!');
-                }
-            }
+        function loadLatestDatabaseData() {
+            fetch('/api/iot/latest')
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success && result.data) {
+                        const data = result.data;
+                        addDatabaseDataToChart(data);
+                        updateDatabaseStats(data);
+                        classifyData(data); // Klasifikasi otomatis
+                        
+                        // Reset countdown
+                        countdown = 30; // 30 detik untuk database mode
+                        
+                        console.log('Database data updated:', data);
+                    } else {
+                        console.log('No database data available');
+                        document.getElementById('dataSourceInfo').textContent = 'Mode: Menunggu Data IoT...';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading database data:', error);
+                    document.getElementById('dataSourceInfo').textContent = 'Mode: Error Database';
+                });
         }
 
         function updateCountdown() {
@@ -663,27 +772,21 @@
             document.getElementById('lastUpdateValue').textContent = timeString;
             
             if (countdown <= 0) {
-                countdown = 60;
+                countdown = 30; // 30 detik untuk database mode
             }
         }
 
         function startMonitoring() {
-            if (allData.length === 0) {
-                alert('Data belum dimuat. Silakan tunggu sebentar.');
-                return;
-            }
-            
-            document.getElementById('statusValue').textContent = 'Monitoring Aktif';
+            document.getElementById('statusValue').textContent = 'Monitoring Aktif - Database';
             document.getElementById('startBtn').disabled = true;
             document.getElementById('stopBtn').disabled = false;
+            document.getElementById('dataSourceInfo').textContent = 'Mode: Real-time Database';
             
-            // Load data pertama langsung
-            if (currentIndex === 0) {
-                loadNextData();
-            }
+            // Load data pertama dari database langsung
+            loadLatestDatabaseData();
             
-            // Set interval untuk update data setiap 60 detik
-            intervalId = setInterval(loadNextData, 60000);
+            // Set interval untuk update data dari database setiap 30 detik
+            intervalId = setInterval(loadLatestDatabaseData, 30000);
             
             // Set interval untuk countdown setiap 1 detik
             countdownId = setInterval(updateCountdown, 1000);
@@ -703,13 +806,13 @@
             document.getElementById('statusValue').textContent = 'Pause';
             document.getElementById('startBtn').disabled = false;
             document.getElementById('stopBtn').disabled = true;
+            document.getElementById('dataSourceInfo').textContent = 'Mode: Monitoring Dihentikan';
         }
 
         function resetMonitoring() {
             stopMonitoring();
             
-            currentIndex = 0;
-            countdown = 60;
+            countdown = 30; // Reset ke 30 detik untuk database mode
             
             // Clear semua array data
             while (phData.labels.length > 0) {
@@ -741,15 +844,16 @@
             document.getElementById('suhuValue').textContent = '-';
             document.getElementById('doValue').textContent = '-';
             document.getElementById('statusValue').textContent = 'Standby';
-            document.getElementById('dataPointValue').textContent = `0 / ${allData.length}`;
+            document.getElementById('dataPointValue').textContent = '0 Data Point';
             document.getElementById('lastUpdateValue').textContent = '-';
+            document.getElementById('dataSourceInfo').textContent = 'Mode: Reset';
             
             // Reset classification result
             const resultDiv = document.getElementById('classificationResult');
             resultDiv.className = 'classification-result pending';
-            resultDiv.innerHTML = '<div>Menunggu data...</div>';
+            resultDiv.innerHTML = '<div>Menunggu data dari database...</div>';
             
-            console.log('Dashboard telah direset');
+            console.log('Dashboard telah direset untuk mode database');
         }
 
         // Event Listeners
