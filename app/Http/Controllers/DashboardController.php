@@ -27,21 +27,19 @@ class DashboardController extends Controller
 
     private function getIoTData(Request $request)
     {
-        // Get data from database
-        $monitorings = Monitorings::latest()
+        // Get data from database - urut dari lama ke baru (chronological order)
+        $monitorings = Monitorings::orderBy('id', 'asc')
             ->limit(100) // Last 100 records for chart performance
-            ->get()
-            ->reverse() // Show in chronological order
-            ->values();
+            ->get();
 
         $data = $monitorings->map(function($monitoring, $index) {
             return [
                 'index' => $index,
-                'date' => $monitoring->created_at->format('Y-m-d H:i:s'),
-                'ph' => floatval($monitoring->ph),
-                'amonia' => floatval($monitoring->amonia),
-                'suhu' => floatval($monitoring->suhu),
-                'do' => floatval($monitoring->do)
+                'date' => $monitoring->created_at ? $monitoring->created_at->format('Y-m-d H:i:s') : '',
+                'ph' => floatval($monitoring->ph ?? 0),
+                'amonia' => floatval($monitoring->tds ?? 0), // Gunakan TDS sebagai amonia
+                'suhu' => floatval($monitoring->suhu ?? 0),
+                'do' => floatval($monitoring->do ?? 0)
             ];
         });
 

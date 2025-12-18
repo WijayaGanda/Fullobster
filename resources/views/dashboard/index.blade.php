@@ -327,6 +327,128 @@
             color: #999;
             font-size: 0.9em;
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 3% auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 1200px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 25px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+
+        .close {
+            color: white;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            line-height: 1;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close:hover,
+        .close:focus {
+            background: rgba(255,255,255,0.2);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-chart-wrapper {
+            position: relative;
+            height: 500px;
+            margin-bottom: 20px;
+        }
+
+        .chart-container canvas {
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .chart-container:hover canvas {
+            transform: scale(1.02);
+        }
+
+        .modal-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .modal-info-item {
+            text-align: center;
+        }
+
+        .modal-info-item .label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .modal-info-item .value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
     </style>
 </head>
 <body>
@@ -352,10 +474,6 @@
                     <span class="value" id="lastUpdateValue">-</span>
                 </div>
                 <div class="info-item">
-                    <span class="label">Data Point:</span>
-                    <span class="value" id="dataPointValue">0 / 0</span>
-                </div>
-                <div class="info-item">
                     <span class="label">Sumber Data:</span>
                     <span class="value" id="dataSourceInfo">Loading...</span>
                 </div>
@@ -369,7 +487,7 @@
                 <div class="unit">pH Level</div>
             </div>
             <div class="stat-card amonia">
-                <h3>Amonia</h3>
+                <h3>TDS</h3>
                 <div class="value" id="amoniaValue">-</div>
                 <div class="unit">mg/L</div>
             </div>
@@ -393,25 +511,25 @@
         </div>
 
         <div class="charts-grid">
-            <div class="chart-container"> 
+            <div class="chart-container" onclick="openChartModal('ph')"> 
                 <h2>🧪 pH Air</h2>
                 <div class="chart-wrapper">
                     <canvas id="phChart"></canvas>
                 </div>
             </div>
-            <div class="chart-container">
-                <h2>☢️ Amonia (mg/L)</h2>
+            <div class="chart-container" onclick="openChartModal('amonia')">
+                <h2>☢️ TDS (mg/L)</h2>
                 <div class="chart-wrapper">
                     <canvas id="amoniaChart"></canvas>
                 </div>
             </div>
-            <div class="chart-container">
+            <div class="chart-container" onclick="openChartModal('suhu')">
                 <h2>🌡️ Suhu (°C)</h2>
                 <div class="chart-wrapper">
                     <canvas id="suhuChart"></canvas>
                 </div>
             </div>
-            <div class="chart-container">
+            <div class="chart-container" onclick="openChartModal('do')">
                 <h2>💨 Oksigen Terlarut (mg/L)</h2>
                 <div class="chart-wrapper">
                     <canvas id="doChart"></canvas>
@@ -419,10 +537,43 @@
             </div>
         </div>
 
+        <!-- Modal untuk menampilkan grafik -->
+        <div id="chartModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modalTitle">Grafik Detail</h2>
+                    <span class="close" onclick="closeChartModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-chart-wrapper">
+                        <canvas id="modalChart"></canvas>
+                    </div>
+                    <div class="modal-info">
+                        <div class="modal-info-item">
+                            <div class="label">Nilai Terkini</div>
+                            <div class="value" id="modalCurrentValue">-</div>
+                        </div>
+                        <div class="modal-info-item">
+                            <div class="label">Rata-rata</div>
+                            <div class="value" id="modalAvgValue">-</div>
+                        </div>
+                        <div class="modal-info-item">
+                            <div class="label">Nilai Tertinggi</div>
+                            <div class="value" id="modalMaxValue">-</div>
+                        </div>
+                        <div class="modal-info-item">
+                            <div class="label">Nilai Terendah</div>
+                            <div class="value" id="modalMinValue">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="footer-banner">
             <h3>👋 Tentang Kami</h3>
             <p>Ingin tahu lebih banyak tentang tim pengembang di balik dashboard ini?</p>
-            <a href="/" class="landing-btn">
+            <a href="{{ url('/') }}" class="landing-btn">
                 🎉 Kunjungi Landing Page Kami <i>→</i>
             </a>
             <div class="footer-info">
@@ -433,13 +584,14 @@
     </div>
 
     <script>
-        let phChart, amoniaChart, suhuChart, doChart;
+        let phChart, amoniaChart, suhuChart, doChart, modalChart;
         let allData = [];
         let currentIndex = 0;
         let intervalId = null;
         let countdownId = null;
         let countdown = 60;
         const maxDataPoints = 20; // Maksimal titik yang ditampilkan di grafik
+        let currentModalType = null; // Menyimpan tipe chart yang sedang ditampilkan di modal
 
         // Data untuk setiap chart
         const phData = { labels: [], data: [] };
@@ -527,17 +679,16 @@
 
         function initCharts() {
             phChart = createChart('phChart', 'pH Level', '#3b82f6', phData);
-            amoniaChart = createChart('amoniaChart', 'Amonia (mg/L)', '#10b981', amoniaData);
+            amoniaChart = createChart('amoniaChart', 'TDS (mg/L)', '#10b981', amoniaData);
             suhuChart = createChart('suhuChart', 'Suhu (°C)', '#f59e0b', suhuData);
             doChart = createChart('doChart', 'DO (mg/L)', '#8b5cf6', doData);
         }
 
         function loadAllData() {
-            fetch('/api/dashboard/data')
+            fetch('http://195.88.211.90/~fullobst/api/dashboard/data')
                 .then(response => response.json())
                 .then(data => {
                     allData = data;
-                    document.getElementById('dataPointValue').textContent = `0 / ${allData.length}`;
                     console.log('Data loaded:', allData.length, 'records');
                     
                     // Check if we have IoT data vs CSV data
@@ -551,7 +702,7 @@
 
         function checkDataSource() {
             // Cek apakah ada data di database IoT
-            fetch('/api/iot/latest')
+            fetch('http://195.88.211.90/~fullobst/api/iot/latest')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success && data.data) {
@@ -574,14 +725,14 @@
             // Auto-load latest data every 30 seconds
             setInterval(() => {
                 loadLatestIoTData();
-            }, 30000);
+            }, 2000);
             
             // Load initial latest data
             loadLatestIoTData();
         }
 
         function loadLatestIoTData() {
-            fetch('/api/iot/latest')
+            fetch('http://195.88.211.90/~fullobst/api/iot/latest')
                 .then(response => response.json())
                 .then(data => {
                     if (data.length > 0) {
@@ -628,6 +779,18 @@
             amoniaChart.update('active');
             suhuChart.update('active');
             doChart.update('active');
+
+            // Update modal chart jika sedang terbuka
+            updateModalChart();
+
+            // Otomatis jalankan klasifikasi setelah data ditambahkan
+            const classificationData = {
+                ph: parseFloat(data.ph),
+                amonia: parseFloat(data.amonia),
+                suhu: parseFloat(data.suhu),
+                do: parseFloat(data.do)
+            };
+            classifyData(classificationData);
         }
 
         function updateDatabaseStats(data) {
@@ -639,10 +802,6 @@
             const now = new Date();
             const timeString = now.toLocaleTimeString('id-ID');
             document.getElementById('lastUpdateValue').textContent = timeString;
-            
-            // Update data point counter
-            const dataPointCount = phData.labels.length;
-            document.getElementById('dataPointValue').textContent = `${dataPointCount} Data Point`;
         }
 
         function updateChart(data) {
@@ -678,6 +837,12 @@
             amoniaChart.update('none');
             suhuChart.update('none');
             doChart.update('none');
+
+            // Update modal chart jika sedang terbuka
+            updateModalChart();
+
+            // Otomatis jalankan klasifikasi setelah data ditambahkan
+            classifyData(data);
         }
 
         function classifyData(data) {
@@ -735,11 +900,10 @@
             const now = new Date();
             const timeString = now.toLocaleTimeString('id-ID');
             document.getElementById('lastUpdateValue').textContent = timeString;
-            document.getElementById('dataPointValue').textContent = `${currentIndex + 1} / ${allData.length}`;
         }
 
         function loadLatestDatabaseData() {
-            fetch('/api/iot/latest')
+            fetch('http://195.88.211.90/~fullobst/api/iot/latest')
                 .then(response => response.json())
                 .then(result => {
                     if (result.success && result.data) {
@@ -786,7 +950,7 @@
             loadLatestDatabaseData();
             
             // Set interval untuk update data dari database setiap 30 detik
-            intervalId = setInterval(loadLatestDatabaseData, 30000);
+            intervalId = setInterval(loadLatestDatabaseData, 2000);
             
             // Set interval untuk countdown setiap 1 detik
             countdownId = setInterval(updateCountdown, 1000);
@@ -837,6 +1001,9 @@
             amoniaChart.update('active');
             suhuChart.update('active');
             doChart.update('active');
+
+            // Update modal chart jika sedang terbuka
+            updateModalChart();
             
             // Reset nilai statistik
             document.getElementById('phValue').textContent = '-';
@@ -845,7 +1012,6 @@
             document.getElementById('doValue').textContent = '-';
             document.getElementById('statusValue').textContent = 'Standby';
             document.getElementById('dataPointValue').textContent = '0 Data Point';
-            document.getElementById('lastUpdateValue').textContent = '-';
             document.getElementById('dataSourceInfo').textContent = 'Mode: Reset';
             
             // Reset classification result
@@ -859,6 +1025,230 @@
         // Event Listeners
         document.getElementById('startBtn').addEventListener('click', startMonitoring);
         document.getElementById('stopBtn').addEventListener('click', stopMonitoring);
+
+        // Modal Functions
+        function openChartModal(type) {
+            currentModalType = type;
+            const modal = document.getElementById('chartModal');
+            
+            // Set title dan warna berdasarkan tipe
+            const titles = {
+                'ph': '🧪 pH Air - Detail View',
+                'amonia': '☢️ TDS (mg/L) - Detail View',
+                'suhu': '🌡️ Suhu (°C) - Detail View',
+                'do': '💨 Oksigen Terlarut (mg/L) - Detail View'
+            };
+            
+            const colors = {
+                'ph': '#3b82f6',
+                'amonia': '#10b981',
+                'suhu': '#f59e0b',
+                'do': '#8b5cf6'
+            };
+            
+            document.getElementById('modalTitle').textContent = titles[type];
+            
+            // Buat chart di modal dengan referensi data yang sama
+            createModalChart(type, colors[type]);
+            
+            // Update info statistics
+            updateModalInfo(type);
+            
+            // Tampilkan modal
+            modal.style.display = 'block';
+        }
+
+        function closeChartModal() {
+            const modal = document.getElementById('chartModal');
+            modal.style.display = 'none';
+            
+            // Hancurkan chart modal
+            if (modalChart) {
+                modalChart.destroy();
+                modalChart = null;
+            }
+            
+            currentModalType = null;
+        }
+
+        function createModalChart(type, color) {
+            // Hancurkan chart lama jika ada
+            if (modalChart) {
+                modalChart.destroy();
+            }
+            
+            // Ambil data berdasarkan tipe
+            const chartData = getChartDataByType(type);
+            
+            const ctx = document.getElementById('modalChart').getContext('2d');
+            modalChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.labels,
+                    datasets: [{
+                        label: getTitleByType(type),
+                        data: chartData.data,
+                        borderColor: color,
+                        backgroundColor: color.replace('rgb', 'rgba').replace(')', ', 0.1)'),
+                        tension: 0.4,
+                        borderWidth: 3,
+                        fill: true,
+                        pointRadius: 6,
+                        pointHoverRadius: 9,
+                        pointBackgroundColor: color,
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                            padding: 15,
+                            titleFont: {
+                                size: 16,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 14
+                            },
+                            cornerRadius: 8
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.08)',
+                                lineWidth: 1
+                            },
+                            ticks: {
+                                font: {
+                                    size: 13
+                                },
+                                padding: 10
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.08)',
+                                lineWidth: 1
+                            },
+                            ticks: {
+                                font: {
+                                    size: 12
+                                },
+                                maxRotation: 45,
+                                minRotation: 45,
+                                padding: 10
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function getChartDataByType(type) {
+            const dataMap = {
+                'ph': phData,
+                'amonia': amoniaData,
+                'suhu': suhuData,
+                'do': doData
+            };
+            return dataMap[type];
+        }
+
+        function getTitleByType(type) {
+            const titles = {
+                'ph': 'pH Level',
+                'amonia': 'TDS (mg/L)',
+                'suhu': 'Suhu (°C)',
+                'do': 'DO (mg/L)'
+            };
+            return titles[type];
+        }
+
+        function updateModalInfo(type) {
+            const chartData = getChartDataByType(type);
+            const data = chartData.data;
+            
+            if (data.length === 0) {
+                document.getElementById('modalCurrentValue').textContent = '-';
+                document.getElementById('modalAvgValue').textContent = '-';
+                document.getElementById('modalMaxValue').textContent = '-';
+                document.getElementById('modalMinValue').textContent = '-';
+                return;
+            }
+            
+            const current = data[data.length - 1];
+            const avg = data.reduce((a, b) => a + b, 0) / data.length;
+            const max = Math.max(...data);
+            const min = Math.min(...data);
+            
+            const unit = type === 'ph' ? '' : (type === 'suhu' ? '°C' : 'mg/L');
+            
+            document.getElementById('modalCurrentValue').textContent = current.toFixed(2) + ' ' + unit;
+            document.getElementById('modalAvgValue').textContent = avg.toFixed(2) + ' ' + unit;
+            document.getElementById('modalMaxValue').textContent = max.toFixed(2) + ' ' + unit;
+            document.getElementById('modalMinValue').textContent = min.toFixed(2) + ' ' + unit;
+        }
+
+        function updateModalChart() {
+            // Update modal chart jika sedang terbuka
+            if (currentModalType && modalChart) {
+                const chartData = getChartDataByType(currentModalType);
+                modalChart.data.labels = chartData.labels;
+                modalChart.data.datasets[0].data = chartData.data;
+                modalChart.update('none');
+                
+                // Update info statistics
+                updateModalInfo(currentModalType);
+            }
+        }
+
+        // Tutup modal ketika klik di luar modal
+        window.onclick = function(event) {
+            const modal = document.getElementById('chartModal');
+            if (event.target == modal) {
+                closeChartModal();
+            }
+        }
+
+        // Fungsi classify yang dapat dipanggil dari luar
+        function classify() {
+            if (phData.data.length === 0) {
+                alert('Tidak ada data untuk diklasifikasi. Mulai monitoring terlebih dahulu.');
+                return;
+            }
+            
+            const lastIndex = phData.data.length - 1;
+            const data = {
+                ph: phData.data[lastIndex],
+                amonia: amoniaData.data[lastIndex],
+                suhu: suhuData.data[lastIndex],
+                do: doData.data[lastIndex]
+            };
+            
+            classifyData(data);
+        }
 
         // Initialize
         window.addEventListener('load', () => {

@@ -14,8 +14,8 @@ Route::get('/api/dashboard/data', [DashboardController::class, 'getData'])->name
 Route::get('/api/dashboard/data/{index}', [DashboardController::class, 'getDataByIndex'])->name('dashboard.data.index');
 Route::post('/api/dashboard/classify', [DashboardController::class, 'classify'])->name('dashboard.classify');
 
-// IoT API Routes
-Route::prefix('api/iot')->name('iot.')->group(function () {
+// IoT API Routes (without CSRF protection)
+Route::prefix('api/iot')->name('iot.')->withoutMiddleware(['web'])->group(function () {
     // Untuk menerima data dari sensor IoT
     Route::post('/data', [IoTController::class, 'receiveData'])->name('receive');
     
