@@ -457,6 +457,13 @@
                 <div class="team-card">
                     <div class="team-avatar">👨‍💻</div>
                     <h3>Developer 1</h3>
+                    <p class="team-role">Supervisor</p>
+                    <p>Bertanggung jawab atas pengembangan backend dan integrasi sistem dengan fokus pada Laravel framework dan API development.</p>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-avatar">👨‍💻</div>
+                    <h3>Developer 1</h3>
                     <p class="team-role">Full Stack Developer</p>
                     <p>Bertanggung jawab atas pengembangan backend dan integrasi sistem dengan fokus pada Laravel framework dan API development.</p>
                 </div>

@@ -102,6 +102,12 @@
         .chart-wrapper {
             position: relative;
             height: 300px;
+            width: 100%;
+        }
+
+        .chart-wrapper canvas {
+            max-width: 100%;
+            height: 100% !important;
         }
 
         .charts-grid {
@@ -140,6 +146,12 @@
             animation: alertPulse 2s infinite;
         }
 
+        .classification-result.warning {
+            background: linear-gradient(135deg, #f97316, #ea580c);
+            color: white;
+            animation: warningPulse 3s infinite;
+        }
+
         .classification-result.maintain {
             background: linear-gradient(135deg, #10b981, #059669);
             color: white;
@@ -153,6 +165,11 @@
         @keyframes alertPulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.02); }
+        }
+
+        @keyframes warningPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.01); opacity: 0.95; }
         }
 
         .classification-details {
@@ -413,6 +430,12 @@
             position: relative;
             height: 500px;
             margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .modal-chart-wrapper canvas {
+            max-width: 100%;
+            height: 100% !important;
         }
 
         .chart-container canvas {
@@ -448,6 +471,224 @@
             font-size: 1.5em;
             font-weight: bold;
             color: #333;
+        }
+
+        /* Responsive Design untuk Mobile */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .header p {
+                font-size: 0.9em;
+            }
+
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-card h3 {
+                font-size: 0.75em;
+            }
+
+            .stat-card .value {
+                font-size: 1.8em;
+            }
+
+            .stat-card .unit {
+                font-size: 0.8em;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .chart-container {
+                padding: 20px 15px;
+            }
+
+            .chart-container h2 {
+                font-size: 1.2em;
+            }
+
+            .chart-wrapper {
+                height: 250px;
+            }
+
+            .control-panel {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .control-panel > div {
+                width: 100%;
+            }
+
+            .control-panel > div:first-child {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .control-panel > div:last-child {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start !important;
+            }
+
+            .btn {
+                width: 100%;
+                padding: 12px 20px;
+                font-size: 0.95em;
+            }
+
+            .info-item {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .info-item .label,
+            .info-item .value {
+                font-size: 0.9em;
+            }
+
+            .classification-panel {
+                padding: 20px 15px;
+            }
+
+            .classification-panel h2 {
+                font-size: 1.3em;
+            }
+
+            .classification-result {
+                padding: 20px;
+                font-size: 1.2em;
+            }
+
+            .classification-details {
+                font-size: 0.85em;
+            }
+
+            .info-panel {
+                padding: 15px;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .footer-banner {
+                padding: 20px 15px;
+            }
+
+            .footer-banner h3 {
+                font-size: 1.2em;
+            }
+
+            .footer-banner p {
+                font-size: 0.95em;
+            }
+
+            .landing-btn {
+                padding: 12px 30px;
+                font-size: 0.95em;
+            }
+
+            .footer-info {
+                font-size: 0.8em;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+
+            .modal-header {
+                padding: 20px 15px;
+            }
+
+            .modal-header h2 {
+                font-size: 1.3em;
+            }
+
+            .modal-body {
+                padding: 15px;
+            }
+
+            .modal-chart-wrapper {
+                height: 300px;
+            }
+
+            .modal-info {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                padding: 15px;
+            }
+
+            .modal-info-item .label {
+                font-size: 0.8em;
+            }
+
+            .modal-info-item .value {
+                font-size: 1.2em;
+            }
+        }
+
+        /* Responsive Design untuk layar sangat kecil (< 480px) */
+        @media screen and (max-width: 480px) {
+            .header h1 {
+                font-size: 1.2em;
+            }
+
+            .header p {
+                font-size: 0.8em;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card .value {
+                font-size: 2em;
+            }
+
+            .chart-wrapper {
+                height: 200px;
+            }
+
+            .classification-result {
+                font-size: 1em;
+                padding: 15px;
+            }
+
+            .modal-info {
+                grid-template-columns: 1fr;
+            }
+
+            .landing-btn {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+        }
+
+        /* Responsive untuk landscape mode di mobile */
+        @media screen and (max-width: 768px) and (orientation: landscape) {
+            .stats-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .charts-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
@@ -518,7 +759,7 @@
                 </div>
             </div>
             <div class="chart-container" onclick="openChartModal('amonia')">
-                <h2>☢️ TDS (mg/L)</h2>
+                <h2>☢️ TDS (ppm)</h2>
                 <div class="chart-wrapper">
                     <canvas id="amoniaChart"></canvas>
                 </div>
@@ -620,6 +861,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    resizeDelay: 0,
                     interaction: {
                         intersect: false,
                         mode: 'index'
@@ -630,21 +872,21 @@
                             position: 'top',
                             labels: {
                                 usePointStyle: true,
-                                padding: 15,
+                                padding: window.innerWidth < 768 ? 8 : 15,
                                 font: {
-                                    size: 12,
+                                    size: window.innerWidth < 768 ? 10 : 12,
                                     weight: 'bold'
                                 }
                             }
                         },
                         tooltip: {
                             backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            padding: 12,
+                            padding: window.innerWidth < 768 ? 8 : 12,
                             titleFont: {
-                                size: 14
+                                size: window.innerWidth < 768 ? 12 : 14
                             },
                             bodyFont: {
-                                size: 13
+                                size: window.innerWidth < 768 ? 11 : 13
                             }
                         }
                     },
@@ -656,7 +898,7 @@
                             },
                             ticks: {
                                 font: {
-                                    size: 11
+                                    size: window.innerWidth < 768 ? 9 : 11
                                 }
                             }
                         },
@@ -666,10 +908,12 @@
                             },
                             ticks: {
                                 font: {
-                                    size: 11
+                                    size: window.innerWidth < 768 ? 8 : 11
                                 },
-                                maxRotation: 45,
-                                minRotation: 45
+                                maxRotation: window.innerWidth < 768 ? 90 : 45,
+                                minRotation: window.innerWidth < 768 ? 45 : 45,
+                                autoSkip: true,
+                                maxTicksLimit: window.innerWidth < 768 ? 6 : 10
                             }
                         }
                     }
@@ -679,7 +923,7 @@
 
         function initCharts() {
             phChart = createChart('phChart', 'pH Level', '#3b82f6', phData);
-            amoniaChart = createChart('amoniaChart', 'TDS (mg/L)', '#10b981', amoniaData);
+            amoniaChart = createChart('amoniaChart', 'TDS (ppm)', '#10b981', amoniaData);
             suhuChart = createChart('suhuChart', 'Suhu (°C)', '#f59e0b', suhuData);
             doChart = createChart('doChart', 'DO (mg/L)', '#8b5cf6', doData);
         }
@@ -872,20 +1116,31 @@
         function updateClassificationResult(result) {
             const resultDiv = document.getElementById('classificationResult');
             
-            if (result.classification === 1 || result.classification === 'KURAS') {
+            // Label: 0 = Kurang Layak, 1 = Layak, 2 = Tidak Layak
+            if (result.classification === 2 || result.classification === 'TIDAK LAYAK' || result.classification === 'KURAS') {
                 resultDiv.className = 'classification-result drain';
                 resultDiv.innerHTML = `
-                    <div>⚠️ PERLU DIKURAS ⚠️</div>
+                    <div>⚠️ TIDAK LAYAK - PERLU DIKURAS ⚠️</div>
                     <div class="classification-details">
                         Kualitas air tidak optimal. Disarankan untuk segera melakukan pengurasan kolam.
+                        ${result.reasons ? '<br><br><strong>Alasan:</strong><br>' + result.reasons.join('<br>') : ''}
+                    </div>
+                `;
+            } else if (result.classification === 0 || result.classification === 'KURANG LAYAK') {
+                resultDiv.className = 'classification-result warning';
+                resultDiv.innerHTML = `
+                    <div>⚠️ KURANG LAYAK</div>
+                    <div class="classification-details">
+                        Kualitas air dalam zona warning. Lanjutkan monitoring rutin dan perhatikan perubahan parameter.
+                        ${result.reasons ? '<br><br><strong>Parameter yang perlu diperhatikan:</strong><br>' + result.reasons.join('<br>') : ''}
                     </div>
                 `;
             } else {
                 resultDiv.className = 'classification-result maintain';
                 resultDiv.innerHTML = `
-                    <div>✅ TIDAK PERLU DIKURAS</div>
+                    <div>✅ LAYAK - TIDAK PERLU DIKURAS</div>
                     <div class="classification-details">
-                        Kualitas air masih dalam kondisi baik. Lanjutkan monitoring rutin.
+                        Kualitas air dalam kondisi baik. Lanjutkan monitoring rutin.
                     </div>
                 `;
             }
@@ -1034,7 +1289,7 @@
             // Set title dan warna berdasarkan tipe
             const titles = {
                 'ph': '🧪 pH Air - Detail View',
-                'amonia': '☢️ TDS (mg/L) - Detail View',
+                'amonia': '☢️ TDS (ppm) - Detail View',
                 'suhu': '🌡️ Suhu (°C) - Detail View',
                 'do': '💨 Oksigen Terlarut (mg/L) - Detail View'
             };
@@ -1103,6 +1358,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    resizeDelay: 0,
                     interaction: {
                         intersect: false,
                         mode: 'index'
@@ -1113,22 +1369,22 @@
                             position: 'top',
                             labels: {
                                 usePointStyle: true,
-                                padding: 20,
+                                padding: window.innerWidth < 768 ? 10 : 20,
                                 font: {
-                                    size: 14,
+                                    size: window.innerWidth < 768 ? 11 : 14,
                                     weight: 'bold'
                                 }
                             }
                         },
                         tooltip: {
                             backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                            padding: 15,
+                            padding: window.innerWidth < 768 ? 10 : 15,
                             titleFont: {
-                                size: 16,
+                                size: window.innerWidth < 768 ? 13 : 16,
                                 weight: 'bold'
                             },
                             bodyFont: {
-                                size: 14
+                                size: window.innerWidth < 768 ? 12 : 14
                             },
                             cornerRadius: 8
                         }
@@ -1142,9 +1398,9 @@
                             },
                             ticks: {
                                 font: {
-                                    size: 13
+                                    size: window.innerWidth < 768 ? 10 : 13
                                 },
-                                padding: 10
+                                padding: window.innerWidth < 768 ? 5 : 10
                             }
                         },
                         x: {
@@ -1154,11 +1410,13 @@
                             },
                             ticks: {
                                 font: {
-                                    size: 12
+                                    size: window.innerWidth < 768 ? 9 : 12
                                 },
-                                maxRotation: 45,
-                                minRotation: 45,
-                                padding: 10
+                                maxRotation: window.innerWidth < 768 ? 90 : 45,
+                                minRotation: window.innerWidth < 768 ? 45 : 45,
+                                padding: window.innerWidth < 768 ? 5 : 10,
+                                autoSkip: true,
+                                maxTicksLimit: window.innerWidth < 768 ? 6 : 10
                             }
                         }
                     }
@@ -1179,7 +1437,7 @@
         function getTitleByType(type) {
             const titles = {
                 'ph': 'pH Level',
-                'amonia': 'TDS (mg/L)',
+                'amonia': 'TDS (ppm)',
                 'suhu': 'Suhu (°C)',
                 'do': 'DO (mg/L)'
             };
@@ -1254,6 +1512,42 @@
         window.addEventListener('load', () => {
             initCharts();
             loadAllData();
+        });
+
+        // Handle window resize untuk responsiveness chart
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                // Destroy dan recreate semua chart dengan konfigurasi responsif
+                if (phChart) {
+                    phChart.destroy();
+                    phChart = createChart('phChart', 'pH Level', '#3b82f6', phData);
+                }
+                if (amoniaChart) {
+                    amoniaChart.destroy();
+                    amoniaChart = createChart('amoniaChart', 'TDS (ppm)', '#10b981', amoniaData);
+                }
+                if (suhuChart) {
+                    suhuChart.destroy();
+                    suhuChart = createChart('suhuChart', 'Suhu (°C)', '#f59e0b', suhuData);
+                }
+                if (doChart) {
+                    doChart.destroy();
+                    doChart = createChart('doChart', 'DO (mg/L)', '#8b5cf6', doData);
+                }
+                
+                // Update modal chart jika sedang terbuka
+                if (currentModalType && modalChart) {
+                    const colors = {
+                        'ph': '#3b82f6',
+                        'amonia': '#10b981',
+                        'suhu': '#f59e0b',
+                        'do': '#8b5cf6'
+                    };
+                    createModalChart(currentModalType, colors[currentModalType]);
+                }
+            }, 300); // Debounce resize event
         });
     </script>
 </body>

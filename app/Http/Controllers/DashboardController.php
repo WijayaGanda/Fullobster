@@ -124,48 +124,57 @@ class DashboardController extends Controller
     {
         $request->validate([
             'ph' => 'required|numeric',
-            'amonia' => 'required|numeric',
+            'amonia' => 'required|numeric',  // Sebenarnya TDS, tapi nama variable tetap amonia untuk backward compatibility
             'suhu' => 'required|numeric',
             'do' => 'required|numeric'
         ]);
 
         $ph = $request->input('ph');
-        $amonia = $request->input('amonia');
+        $tds = $request->input('amonia');  // Di database ini TDS, bukan amonia
         $suhu = $request->input('suhu');
         $do = $request->input('do');
 
         try {
-            // Path ke script Python
-            $pythonScript = base_path('app/Services/ClassificationService.py');
+            // Gunakan Flask API untuk classification dengan ML model (cepat karena model sudah loaded)
+            $ch = curl_init('https://flask-fullobster.azurewebsites.net/classify');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+                'ph' => $ph,
+                'tds' => $tds,
+                'suhu' => $suhu,
+                'do' => $do
+            ]));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 2); // 2 detik timeout
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1); // 1 detik untuk koneksi
             
-            // Cari Python executable
-            $pythonPath = $this->findPythonPath();
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $error = curl_error($ch);
+            curl_close($ch);
             
-            // Jalankan script Python
-            $command = sprintf(
-                '%s "%s" %f %f %f %f',
-                $pythonPath,
-                $pythonScript,
-                $ph,
-                $amonia,
-                $suhu,
-                $do
-            );
-            
-            $output = shell_exec($command);
-            
-            if ($output) {
-                $result = json_decode($output, true);
+            // Jika Flask API berhasil, gunakan hasilnya
+            if ($httpCode === 200 && $response) {
+                $result = json_decode($response, true);
+                $result['method'] = 'flask_ml_model'; // Tandai bahwa menggunakan Flask
                 return response()->json($result);
-            } else {
-                // Fallback: klasifikasi sederhana berdasarkan threshold
-                return response()->json($this->simpleClassification($ph, $amonia, $suhu, $do));
             }
             
+            // Jika gagal, fallback ke PHP simple classification
+            \Log::warning('Flask API not available, using PHP fallback', [
+                'http_code' => $httpCode,
+                'error' => $error
+            ]);
+            
         } catch (\Exception $e) {
-            // Fallback ke klasifikasi sederhana jika Python tidak tersedia
-            return response()->json($this->simpleClassification($ph, $amonia, $suhu, $do));
+            // Fallback ke PHP simple classification jika ada error
+            \Log::error('Error calling Flask API: ' . $e->getMessage());
         }
+        
+        // Fallback: PHP Simple Classification (tetap cepat dan akurat)
+        $result = $this->simpleClassification($ph, $tds, $suhu, $do);
+        return response()->json($result);
     }
 
     private function findPythonPath()
@@ -194,46 +203,82 @@ class DashboardController extends Controller
         return 'python'; // Default fallback
     }
 
-    private function simpleClassification($ph, $amonia, $suhu, $do)
+    private function simpleClassification($ph, $tds, $suhu, $do)
     {
-        // Klasifikasi sederhana berdasarkan threshold
-        // Range optimal untuk budidaya ikan:
-        // pH: 6.5 - 7.5
-        // Amonia: < 0.05 mg/L
-        // Suhu: 23 - 26 °C
-        // DO: > 3.5 mg/L
+        // Klasifikasi dengan 3 kategori
+        // Label: 0 = Kurang Layak, 1 = Layak, 2 = Tidak Layak
+        // 
+        // Range Layak:
+        // - Suhu: 23-25, pH: 6.5-7.8, DO: 4-6, TDS: 50-400
+        //
+        // Range Kurang Layak (warning zone):
+        // - Suhu: 21-22 atau 26-27
+        // - pH: 6.0-6.4 atau 7.9-8.5
+        // - DO: 2.5-3.9 atau 6.1-7
+        // - TDS: 400-600 atau < 50
+        //
+        // Range Tidak Layak (perlu kuras):
+        // - Suhu: < 21 atau > 27
+        // - pH: < 6.0 atau > 8.5
+        // - DO: < 2.5 atau > 7
+        // - TDS: > 600
         
-        $needsDrain = false;
+        $classification = 1; // Default: Layak
         $reasons = [];
+        $notSuitableCount = 0;
+        $lessSuitableCount = 0;
 
-        if ($ph < 6.3 || $ph > 7.7) {
-            $needsDrain = true;
-            $reasons[] = 'pH tidak optimal';
+        // Cek pH
+        if ($ph < 6.0 || $ph > 8.5) {
+            $notSuitableCount++;
+            $reasons[] = "pH tidak layak ({$ph}) - Range layak: 6.5-7.8";
+        } elseif (($ph >= 6.0 && $ph < 6.5) || ($ph > 7.8 && $ph <= 8.5)) {
+            $lessSuitableCount++;
+            $reasons[] = "pH kurang layak ({$ph}) - Range layak: 6.5-7.8";
         }
 
-        if ($amonia > 0.06) {
-            $needsDrain = true;
-            $reasons[] = 'Amonia tinggi';
+        // Cek TDS
+        if ($tds > 600) {
+            $notSuitableCount++;
+            $reasons[] = "TDS tidak layak ({$tds} mg/L) - Range layak: 50-400 mg/L";
+        } elseif ($tds < 50 || ($tds > 400 && $tds <= 600)) {
+            $lessSuitableCount++;
+            $reasons[] = "TDS kurang layak ({$tds} mg/L) - Range layak: 50-400 mg/L";
         }
 
-        if ($suhu < 21 || $suhu > 28) {
-            $needsDrain = true;
-            $reasons[] = 'Suhu tidak ideal';
+        // Cek Suhu
+        if ($suhu < 21 || $suhu > 27) {
+            $notSuitableCount++;
+            $reasons[] = "Suhu tidak layak ({$suhu}°C) - Range layak: 23-25°C";
+        } elseif (($suhu >= 21 && $suhu < 23) || ($suhu > 25 && $suhu <= 27)) {
+            $lessSuitableCount++;
+            $reasons[] = "Suhu kurang layak ({$suhu}°C) - Range layak: 23-25°C";
         }
 
-        if ($do < 2.5) {
-            $needsDrain = true;
-            $reasons[] = 'Oksigen terlarut rendah';
+        // Cek DO
+        if ($do < 2.5 || $do > 7) {
+            $notSuitableCount++;
+            $reasons[] = "DO tidak layak ({$do} mg/L) - Range layak: 4-6 mg/L";
+        } elseif (($do >= 2.5 && $do < 4) || ($do > 6 && $do <= 7)) {
+            $lessSuitableCount++;
+            $reasons[] = "DO kurang layak ({$do} mg/L) - Range layak: 4-6 mg/L";
+        }
+        
+        // Tentukan klasifikasi berdasarkan jumlah parameter
+        if ($notSuitableCount > 0) {
+            $classification = 2; // Tidak Layak - perlu kuras
+        } elseif ($lessSuitableCount > 0) {
+            $classification = 0; // Kurang Layak - monitoring rutin
         }
 
         return [
-            'classification' => $needsDrain ? 1 : 0,
+            'classification' => $classification,
             'confidence' => null,
             'reasons' => $reasons,
             'method' => 'simple_threshold',
             'input' => [
                 'ph' => $ph,
-                'amonia' => $amonia,
+                'tds' => $tds,
                 'suhu' => $suhu,
                 'do' => $do
             ]
