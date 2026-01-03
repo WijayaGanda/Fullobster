@@ -199,6 +199,170 @@
             font-weight: bold;
         }
 
+        /* Accuracy Section */
+        .accuracy-section {
+            padding: 100px 20px;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        .accuracy-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 30px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .accuracy-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .accuracy-header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .accuracy-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .accuracy-title {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .accuracy-value {
+            font-size: 4em;
+            font-weight: 700;
+            color: white;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            margin: 20px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .accuracy-percentage {
+            font-size: 0.5em;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .classification-report {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+        }
+
+        .report-title {
+            color: white;
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+
+        .report-table thead th {
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 600;
+            padding: 10px;
+            text-align: right;
+            font-size: 0.9em;
+        }
+
+        .report-table thead th:first-child {
+            text-align: left;
+        }
+
+        .report-table tbody tr {
+            background: rgba(30, 41, 59, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        .report-table tbody tr:hover {
+            background: rgba(102, 126, 234, 0.3);
+            transform: scale(1.02);
+        }
+
+        .report-table tbody td {
+            padding: 15px 10px;
+            color: white;
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .report-table tbody td:first-child {
+            text-align: left;
+            font-weight: 600;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .report-table tbody td:last-child {
+            border-radius: 0 10px 10px 0;
+        }
+
+        .report-table tfoot tr {
+            border-top: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .report-table tfoot td {
+            padding: 15px 10px;
+            color: white;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .report-table tfoot td:first-child {
+            text-align: left;
+        }
+
+        .metric-badge {
+            display: inline-block;
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
         /* Team Section */
         .team-section {
             padding: 100px 20px;
@@ -207,15 +371,15 @@
 
         .team-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
             margin-top: 60px;
         }
 
         .team-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 20px;
-            padding: 40px 30px;
+            border-radius: 15px;
+            padding: 25px 15px;
             text-align: center;
             transition: all 0.3s ease;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
@@ -245,32 +409,33 @@
         }
 
         .team-avatar {
-            width: 150px;
-            height: 150px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             background: white;
-            margin: 0 auto 20px;
+            margin: 0 auto 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 4em;
+            font-size: 3em;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             position: relative;
             z-index: 1;
         }
 
         .team-card h3 {
-            font-size: 1.5em;
-            margin-bottom: 10px;
+            font-size: 1em;
+            margin-bottom: 8px;
             color: white;
             position: relative;
             z-index: 1;
+            line-height: 1.3;
         }
 
         .team-role {
             color: rgba(255, 255, 255, 0.9);
-            font-size: 1em;
-            margin-bottom: 15px;
+            font-size: 0.85em;
+            margin-bottom: 12px;
             font-weight: 500;
             position: relative;
             z-index: 1;
@@ -278,8 +443,8 @@
 
         .team-card p {
             color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9em;
-            line-height: 1.6;
+            font-size: 0.75em;
+            line-height: 1.5;
             position: relative;
             z-index: 1;
         }
@@ -340,8 +505,24 @@
                 font-size: 2em;
             }
 
-            .team-grid, .project-grid {
+            .team-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .team-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .team-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
@@ -447,46 +628,125 @@
         </div>
     </section>
 
+    <!-- Accuracy Section -->
+    <section class="accuracy-section">
+        <div class="container">
+            <h2 class="section-title">Performa Model Machine Learning</h2>
+            <p class="section-subtitle">Hasil evaluasi model klasifikasi kualitas air</p>
+            
+            <div class="accuracy-container">
+                <div class="accuracy-header">
+                    <div class="accuracy-badge">🎯 Decision Tree Classifier</div>
+                    <h3 class="accuracy-title">Accuracy Score</h3>
+                    <div class="accuracy-value">
+                        97.82<span class="accuracy-percentage">%</span>
+                    </div>
+                </div>
+
+                <div class="classification-report">
+                    <div class="report-title">Classification Report</div>
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>Kategori</th>
+                                <th>Precision</th>
+                                <th>Recall</th>
+                                <th>F1-Score</th>
+                                <th>Support</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>🟢 Kurang Layak</td>
+                                <td>0.99</td>
+                                <td>0.97</td>
+                                <td>0.98</td>
+                                <td>353</td>
+                            </tr>
+                            <tr>
+                                <td>🔵 Layak</td>
+                                <td>0.97</td>
+                                <td>0.99</td>
+                                <td>0.98</td>
+                                <td>223</td>
+                            </tr>
+                            <tr>
+                                <td>🔴 Tidak Layak</td>
+                                <td>0.79</td>
+                                <td>0.95</td>
+                                <td>0.86</td>
+                                <td>20</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td>Accuracy</td>
+                                <td></td>
+                                <td></td>
+                                <td>0.98</td>
+                                <td>596</td>
+                            </tr>
+                            <tr>
+                                <td>Macro Avg</td>
+                                <td>0.92</td>
+                                <td>0.97</td>
+                                <td>0.94</td>
+                                <td>596</td>
+                            </tr>
+                            <tr>
+                                <td>Weighted Avg</td>
+                                <td>0.98</td>
+                                <td>0.98</td>
+                                <td>0.98</td>
+                                <td>596</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Team Section -->
     <section class="team-section">
         <div class="container">
             <h2 class="section-title">Tim Pengembang</h2>
-            <p class="section-subtitle">Mahasiswa Semester 7 - Capstone Project</p>
+            <p class="section-subtitle">Mahasiswa Semester 7 Telkom University Surabaya - Capstone Project</p>
             
             <div class="team-grid">
                 <div class="team-card">
-                    <div class="team-avatar">👨‍💻</div>
-                    <h3>Developer 1</h3>
+                    <div class="team-avatar">👨‍🏫</div>
+                    <h3>Mochamad Nizar Palefi Ma'ady, S.Kom., M.Kom., M.IM</h3>
                     <p class="team-role">Supervisor</p>
-                    <p>Bertanggung jawab atas pengembangan backend dan integrasi sistem dengan fokus pada Laravel framework dan API development.</p>
+                    <p>Membimbing dan mengawasi jalannya proyek capstone, memberikan arahan teknis, serta memastikan kualitas dan ketepatan implementasi sistem sesuai standar akademik dan industri.</p>
                 </div>
 
                 <div class="team-card">
                     <div class="team-avatar">👨‍💻</div>
-                    <h3>Developer 1</h3>
+                    <h3>Wijaya Ganda Prasetyo</h3>
                     <p class="team-role">Full Stack Developer</p>
                     <p>Bertanggung jawab atas pengembangan backend dan integrasi sistem dengan fokus pada Laravel framework dan API development.</p>
                 </div>
 
                 <div class="team-card">
-                    <div class="team-avatar">👩‍💻</div>
-                    <h3>Developer 2</h3>
+                    <div class="team-avatar">👨‍💻</div>
+                    <h3>Ferdynal Christian Valentino</h3>
                     <p class="team-role">Frontend Developer</p>
                     <p>Mengembangkan antarmuka pengguna yang intuitif dan responsive dengan fokus pada user experience dan visualisasi data.</p>
                 </div>
 
                 <div class="team-card">
-                    <div class="team-avatar">👨‍🔬</div>
-                    <h3>Developer 3</h3>
+                    <div class="team-avatar">👩‍🔬</div>
+                    <h3>Pavita Pramestri</h3>
                     <p class="team-role">Data Scientist</p>
                     <p>Mengembangkan model Machine Learning untuk klasifikasi kualitas air dan analisis data menggunakan Python dan scikit-learn.</p>
                 </div>
 
                 <div class="team-card">
-                    <div class="team-avatar">👩‍🔬</div>
-                    <h3>Developer 4</h3>
-                    <p class="team-role">System Analyst</p>
-                    <p>Merancang arsitektur sistem, melakukan testing, dan memastikan integrasi yang sempurna antara semua komponen aplikasi.</p>
+                    <div class="team-avatar">👩‍💼</div>
+                    <h3>Nauli Khalila Serafina</h3>
+                    <p class="team-role">Business Analyst</p>
+                    <p>Menganalisis kebutuhan bisnis dan pengguna, mendefinisikan requirements sistem, serta memastikan solusi yang dikembangkan selaras dengan tujuan dan proses bisnis budidaya lobster.</p>
                 </div>
             </div>
         </div>
