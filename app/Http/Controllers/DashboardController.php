@@ -124,13 +124,13 @@ class DashboardController extends Controller
     {
         $request->validate([
             'ph' => 'required|numeric',
-            'amonia' => 'required|numeric',  // Sebenarnya TDS, tapi nama variable tetap amonia untuk backward compatibility
+            'tds' => 'required|numeric',
             'suhu' => 'required|numeric',
             'do' => 'required|numeric'
         ]);
 
         $ph = $request->input('ph');
-        $tds = $request->input('amonia');  // Di database ini TDS, bukan amonia
+        $tds = $request->input('tds');
         $suhu = $request->input('suhu');
         $do = $request->input('do');
 

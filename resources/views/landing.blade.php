@@ -641,67 +641,9 @@
                     <div class="accuracy-value">
                         97.82<span class="accuracy-percentage">%</span>
                     </div>
-                </div>
-
-                <div class="classification-report">
-                    <div class="report-title">Classification Report</div>
-                    <table class="report-table">
-                        <thead>
-                            <tr>
-                                <th>Kategori</th>
-                                <th>Precision</th>
-                                <th>Recall</th>
-                                <th>F1-Score</th>
-                                <th>Support</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>🟢 Kurang Layak</td>
-                                <td>0.99</td>
-                                <td>0.97</td>
-                                <td>0.98</td>
-                                <td>353</td>
-                            </tr>
-                            <tr>
-                                <td>🔵 Layak</td>
-                                <td>0.97</td>
-                                <td>0.99</td>
-                                <td>0.98</td>
-                                <td>223</td>
-                            </tr>
-                            <tr>
-                                <td>🔴 Tidak Layak</td>
-                                <td>0.79</td>
-                                <td>0.95</td>
-                                <td>0.86</td>
-                                <td>20</td>
-                            </tr>
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td>Accuracy</td>
-                                <td></td>
-                                <td></td>
-                                <td>0.98</td>
-                                <td>596</td>
-                            </tr>
-                            <tr>
-                                <td>Macro Avg</td>
-                                <td>0.92</td>
-                                <td>0.97</td>
-                                <td>0.94</td>
-                                <td>596</td>
-                            </tr>
-                            <tr>
-                                <td>Weighted Avg</td>
-                                <td>0.98</td>
-                                <td>0.98</td>
-                                <td>0.98</td>
-                                <td>596</td>
-                            </tr>
-                        </tfoot>
-                    </table>
+                    <p style="color: rgba(255, 255, 255, 0.9); font-size: 1.1em; line-height: 1.6; margin-top: 30px; text-align: center; max-width: 700px; margin-left: auto; margin-right: auto;">
+                        Model klasifikasi menggunakan algoritma Decision Tree berhasil mencapai tingkat akurasi <strong>97.82%</strong> dalam mengklasifikasikan kualitas air menjadi tiga kategori: Layak, Kurang Layak, dan Tidak Layak. Performa tinggi ini menunjukkan bahwa sistem dapat diandalkan untuk memberikan rekomendasi yang akurat dalam monitoring kualitas air budidaya lobster.
+                    </p>
                 </div>
             </div>
         </div>

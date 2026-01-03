@@ -998,7 +998,7 @@
             phData.data.push(parseFloat(data.ph));
             
             amoniaData.labels.push(timeLabel);
-            amoniaData.data.push(parseFloat(data.amonia));
+            amoniaData.data.push(parseFloat(data.tds));
             
             suhuData.labels.push(timeLabel);
             suhuData.data.push(parseFloat(data.suhu));
@@ -1030,7 +1030,7 @@
             // Otomatis jalankan klasifikasi setelah data ditambahkan
             const classificationData = {
                 ph: parseFloat(data.ph),
-                amonia: parseFloat(data.amonia),
+                tds: parseFloat(data.tds),
                 suhu: parseFloat(data.suhu),
                 do: parseFloat(data.do)
             };
@@ -1039,7 +1039,7 @@
 
         function updateDatabaseStats(data) {
             document.getElementById('phValue').textContent = parseFloat(data.ph).toFixed(2);
-            document.getElementById('amoniaValue').textContent = parseFloat(data.amonia).toFixed(2);
+            document.getElementById('amoniaValue').textContent = parseFloat(data.tds).toFixed(2);
             document.getElementById('suhuValue').textContent = parseFloat(data.suhu).toFixed(1);
             document.getElementById('doValue').textContent = parseFloat(data.do).toFixed(2);
             
@@ -1056,7 +1056,7 @@
             phData.data.push(data.ph);
             
             amoniaData.labels.push(label);
-            amoniaData.data.push(data.amonia);
+            amoniaData.data.push(data.tds);
             
             suhuData.labels.push(label);
             suhuData.data.push(data.suhu);
@@ -1099,7 +1099,7 @@
                 },
                 body: JSON.stringify({
                     ph: data.ph,
-                    amonia: data.amonia,
+                    tds: data.tds,
                     suhu: data.suhu,
                     do: data.do
                 })
@@ -1148,7 +1148,7 @@
 
         function updateStats(data) {
             document.getElementById('phValue').textContent = data.ph.toFixed(2);
-            document.getElementById('amoniaValue').textContent = data.amonia.toFixed(2);
+            document.getElementById('amoniaValue').textContent = data.tds.toFixed(2);
             document.getElementById('suhuValue').textContent = data.suhu.toFixed(1);
             document.getElementById('doValue').textContent = data.do.toFixed(1);
             

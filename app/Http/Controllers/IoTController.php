@@ -22,7 +22,7 @@ class IoTController extends Controller
                 'ph' => 'required|numeric',
                 'do' => 'required|numeric',
                 'tds' => 'required|numeric',
-                'amonia' => 'nullable|numeric',
+                // 'amonia' => 'nullable|numeric', // Tidak perlu karena menggunakan TDS
                 'measured_at' => 'nullable|date' // Tambahan untuk timestamp dari IoT device
             ]);
 
@@ -129,7 +129,7 @@ class IoTController extends Controller
             'data' => [
                 'id' => $latestData->id,
                 'ph' => (float) ($latestData->ph ?? 0),
-                'amonia' => (float) ($latestData->tds ?? 0), // Gunakan TDS sebagai amonia
+                // 'amonia' => (float) ($latestData->tds ?? 0), // Gunakan TDS sebagai amonia
                 'suhu' => (float) ($latestData->suhu ?? 0),
                 'do' => (float) ($latestData->do ?? 0),
                 'tds' => (float) ($latestData->tds ?? 0),
@@ -155,7 +155,7 @@ class IoTController extends Controller
                             'index' => $index,
                             'id' => $item->id,
                             'ph' => (float) ($item->ph ?? 0),
-                            'amonia' => (float) ($item->tds ?? 0), // Gunakan TDS sebagai amonia
+                            // 'amonia' => (float) ($item->tds ?? 0), // Gunakan TDS sebagai amonia
                             'suhu' => (float) ($item->suhu ?? 0),
                             'do' => (float) ($item->do ?? 0),
                             'tds' => (float) ($item->tds ?? 0),
@@ -183,8 +183,7 @@ class IoTController extends Controller
             'suhu' => round(rand(220, 280) / 10, 1),
             'ph' => round(rand(60, 80) / 10, 1),
             'do' => round(rand(25, 65) / 10, 1),
-            'tds' => round(rand(200, 600), 0),
-            'amonia' => round(rand(10, 80) / 1000, 3)
+            'tds' => round(rand(200, 600), 0)
         ];
 
         $request = new Request($testData);
